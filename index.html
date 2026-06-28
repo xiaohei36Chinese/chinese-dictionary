@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>中国語 表現図鑑｜現地で使う中国語の使い分けノート</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#E9EDE7;
+    --paper-card:#FBFAF5;
+    --paper-card-hover:#FFFFFF;
+    --ink:#20231F;
+    --ink-80:rgba(32,35,31,.8);
+    --ink-55:rgba(32,35,31,.55);
+    --ink-35:rgba(32,35,31,.35);
+    --ink-18:rgba(32,35,31,.18);
+    --ink-10:rgba(32,35,31,.10);
+    --seal:#A23A2C;
+    --seal-soft:rgba(162,58,44,.12);
+    --jade:#3F6B57;
+    --jade-soft:rgba(63,107,87,.13);
+    --brass:#9B7A3F;
+    --brass-soft:rgba(155,122,63,.15);
+    --sky:#3A6275;
+    --sky-soft:rgba(58,98,117,.13);
+    --radius:2px;
+    --max-w:1080px;
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Noto Sans JP',-apple-system,BlinkMacSystemFont,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    line-height:1.6;
+  }
+  a{ color:inherit; }
+
+  /* ---------- header ---------- */
+  .site-header{
+    position:sticky; top:0; z-index:20;
+    background:var(--paper);
+    border-bottom:1px solid var(--ink-18);
+    background-image:
+      repeating-linear-gradient(to right, var(--ink-10) 0 1px, transparent 1px 40px),
+      repeating-linear-gradient(to bottom, var(--ink-10) 0 1px, transparent 1px 40px);
+    background-size:40px 40px;
+    background-position:center top;
+  }
+  .header-inner{ max-width:var(--max-w); margin:0 auto; padding:22px 18px 14px; }
+  .eyebrow{
+    display:flex; align-items:center; gap:8px;
+    font-size:11px; letter-spacing:.14em; color:var(--ink-55);
+    margin:0 0 6px; text-transform:uppercase;
+  }
+  .eyebrow .seal-dot{ width:6px;height:6px;border-radius:50%;background:var(--seal);display:inline-block; }
+  h1.logo{
+    margin:0 0 6px; font-size:26px; font-weight:900; letter-spacing:.01em;
+    display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;
+  }
+  h1.logo .cn{ font-family:'Noto Serif SC',serif; font-weight:700; font-size:30px; color:var(--seal); }
+  .tagline{ margin:0 0 18px; font-size:13.5px; color:var(--ink-55); max-width:46ch; }
+
+  .search-row{ position:relative; margin-bottom:12px; }
+  .search-row svg{
+    position:absolute; left:14px; top:50%; transform:translateY(-50%);
+    width:17px; height:17px; stroke:var(--ink-35); pointer-events:none;
+  }
+  #searchInput{
+    width:100%; padding:13px 14px 13px 40px; font-size:16px;
+    font-family:inherit; border:1.5px solid var(--ink-18); border-radius:var(--radius);
+    background:var(--paper-card); color:var(--ink); outline:none;
+    -webkit-appearance:none; appearance:none;
+  }
+  #searchInput::placeholder{ color:var(--ink-35); }
+  #searchInput:focus{ border-color:var(--seal); }
+
+  .filter-chips{
+    display:flex; gap:7px; overflow-x:auto; padding-bottom:2px;
+    -ms-overflow-style:none; scrollbar-width:none;
+  }
+  .filter-chips::-webkit-scrollbar{ display:none; }
+  .chip{
+    flex:0 0 auto; font-family:inherit; font-size:13px; font-weight:500;
+    padding:7px 14px; border-radius:999px; border:1.5px solid var(--ink-18);
+    background:var(--paper-card); color:var(--ink-80); cursor:pointer;
+    white-space:nowrap; transition:background .15s,border-color .15s,color .15s;
+  }
+  .chip.active{ background:var(--ink); border-color:var(--ink); color:var(--paper-card); }
+
+  .result-count{ margin-top:10px; font-size:12px; color:var(--ink-35); letter-spacing:.03em; }
+
+  /* ---------- main / cards ---------- */
+  main{ max-width:var(--max-w); margin:0 auto; padding:18px 18px 40px; }
+  .card-grid{ display:grid; grid-template-columns:1fr; gap:12px; }
+  @media(min-width:680px){ .card-grid{ grid-template-columns:1fr 1fr; } }
+  @media(min-width:1000px){ .card-grid{ grid-template-columns:1fr 1fr 1fr; } }
+
+  .card{
+    display:flex; gap:13px; background:var(--paper-card);
+    border:1px solid var(--ink-18); border-radius:var(--radius); padding:14px;
+    text-decoration:none; color:inherit; cursor:pointer;
+    transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
+  }
+  .card:hover{ background:var(--paper-card-hover); box-shadow:0 4px 14px rgba(32,35,31,.08); transform:translateY(-1px); }
+  .card:active{ transform:translateY(0); }
+
+  .glyph{
+    flex:0 0 56px; width:56px; height:56px; position:relative;
+    border:1.4px solid var(--genre-color, var(--ink-35)); background:var(--paper);
+    overflow:hidden;
+  }
+  .glyph::before{ content:""; position:absolute; left:50%; top:0; bottom:0; border-left:1px dashed var(--ink-18); }
+  .glyph::after{ content:""; position:absolute; top:50%; left:0; right:0; border-top:1px dashed var(--ink-18); }
+  .glyph span{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-family:'Noto Serif SC',serif; font-weight:700; font-size:26px; color:var(--genre-color, var(--ink));
+  }
+  /* カードに画像サムネがある場合 */
+  .glyph img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:none; }
+  .glyph img.loaded{ display:block; }
+  .glyph img.loaded ~ span{ display:none; }
+  .glyph img.loaded ~ *{ } /* dashed lines隠す */
+  .glyph.has-img::before,.glyph.has-img::after{ display:none; }
+
+  .card-body{ min-width:0; flex:1; }
+  .card-meta{ display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+  .genre-tag{
+    font-size:10.5px; font-weight:700; letter-spacing:.04em;
+    padding:2px 8px; border-radius:999px; background:var(--genre-bg); color:var(--genre-color);
+  }
+  .card-date{ font-size:11px; color:var(--ink-35); }
+  .card-title{ margin:0 0 7px; font-size:14.5px; font-weight:700; line-height:1.5; }
+  .keyword-chips{ display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px; }
+  .kw-chip{
+    font-family:'Noto Serif SC',serif; font-size:12.5px; font-weight:600;
+    padding:2px 8px; background:var(--ink-10); border-radius:3px; color:var(--ink-80);
+  }
+  .card-summary{ margin:0 0 11px; font-size:12.5px; color:var(--ink-55); line-height:1.65; }
+  .card-link{ display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:700; color:var(--seal); }
+  .card-link svg{ width:10px; height:10px; fill:var(--seal); }
+  mark{ background:var(--seal-soft); color:var(--seal); border-radius:2px; padding:0 1px; }
+
+  /* ---------- loading / error state ---------- */
+  .status-box{
+    display:none; flex-direction:column; align-items:center; text-align:center;
+    padding:60px 22px; color:var(--ink-55);
+  }
+  .status-box.show{ display:flex; }
+  .status-box .glyph{ width:64px; height:64px; margin-bottom:16px; border-color:var(--ink-35); }
+  .status-box .glyph span{ font-size:13px; font-weight:500; color:var(--ink-35); }
+  .status-box h3{ margin:4px 0 8px; font-size:15px; color:var(--ink); }
+  .status-box p{ margin:2px 0; font-size:13px; }
+  .status-box .sub{ font-size:12px; color:var(--ink-35); max-width:34ch; }
+  .status-box code{
+    font-family:ui-monospace,Menlo,monospace; font-size:12px;
+    background:var(--ink-10); padding:2px 6px; border-radius:3px;
+  }
+  .spinner{
+    width:34px; height:34px; border:3px solid var(--ink-18);
+    border-top-color:var(--seal); border-radius:50%;
+    animation:spin .8s linear infinite; margin-bottom:14px;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  /* ---------- request banner (常設) ---------- */
+  .request-banner{
+    max-width:var(--max-w); margin:0 auto; padding:0 18px;
+  }
+  .request-card{
+    background:var(--paper-card);
+    border:1.5px dashed var(--seal);
+    border-radius:4px;
+    padding:20px 20px;
+    display:flex; flex-direction:column; gap:10px;
+    align-items:flex-start;
+  }
+  @media(min-width:680px){
+    .request-card{ flex-direction:row; align-items:center; justify-content:space-between; }
+  }
+  .request-text h3{
+    margin:0 0 4px; font-size:15px; font-weight:700;
+    display:flex; align-items:center; gap:7px;
+  }
+  .request-text h3 .pen{ font-size:16px; }
+  .request-text p{ margin:0; font-size:12.5px; color:var(--ink-55); line-height:1.6; }
+  .btn-request{
+    flex:0 0 auto;
+    display:inline-flex; align-items:center; gap:7px;
+    background:var(--seal); color:#fff; font-family:inherit;
+    font-size:13.5px; font-weight:700; padding:11px 20px;
+    border:none; border-radius:var(--radius); cursor:pointer; text-decoration:none;
+    transition:opacity .12s; white-space:nowrap; -webkit-tap-highlight-color:transparent;
+  }
+  .btn-request:hover{ opacity:.88; }
+  .btn-request svg{ width:14px; height:14px; stroke:#fff; fill:none; stroke-width:2; }
+
+  /* 検索ゼロ件時のリクエスト誘導 */
+  .empty-request{
+    display:none; flex-direction:column; align-items:center; text-align:center;
+    padding:54px 22px 30px; color:var(--ink-55);
+  }
+  .empty-request.show{ display:flex; }
+  .empty-request .glyph{ width:60px; height:60px; margin-bottom:16px; border-color:var(--ink-35); }
+  .empty-request .glyph span{ font-size:13px; color:var(--ink-35); }
+  .empty-request h3{ margin:2px 0 6px; font-size:15px; color:var(--ink); }
+  .empty-request p{ margin:0 0 16px; font-size:13px; max-width:32ch; }
+  .empty-request .btn-request{ font-size:14px; padding:12px 22px; }
+
+  /* ---------- modal ---------- */
+  .modal-overlay{
+    display:none; position:fixed; inset:0; z-index:100;
+    background:rgba(32,35,31,.55);
+    -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px);
+    align-items:center; justify-content:center;
+  }
+  .modal-overlay.open{ display:flex; }
+  .modal{
+    position:relative; width:calc(100% - 32px); max-width:620px;
+    max-height:90dvh; overflow-y:auto; background:var(--paper-card);
+    border:1px solid var(--ink-18); border-radius:4px;
+    display:flex; flex-direction:column; -webkit-overflow-scrolling:touch;
+  }
+  .modal-slide{
+    width:100%; aspect-ratio:16/9; background:var(--paper);
+    border-bottom:1px solid var(--ink-18);
+    display:flex; align-items:center; justify-content:center;
+    position:relative; overflow:hidden;
+  }
+  .modal-slide img{ width:100%; height:100%; object-fit:contain; display:none; }
+  .modal-slide img.loaded{ display:block; }
+  .slide-placeholder{ display:flex; flex-direction:column; align-items:center; gap:8px; pointer-events:none; }
+  .slide-placeholder .big-glyph{
+    width:72px; height:72px; border:1.5px solid var(--modal-genre-color, var(--ink-35));
+    background:var(--paper-card); position:relative;
+  }
+  .slide-placeholder .big-glyph::before{ content:""; position:absolute; left:50%; top:0; bottom:0; border-left:1px dashed var(--ink-18); }
+  .slide-placeholder .big-glyph::after{ content:""; position:absolute; top:50%; left:0; right:0; border-top:1px dashed var(--ink-18); }
+  .slide-placeholder .big-glyph span{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-family:'Noto Serif SC',serif; font-size:36px; font-weight:700; color:var(--modal-genre-color, var(--ink-55));
+  }
+  .slide-placeholder p{ margin:0; font-size:12px; letter-spacing:.05em; color:var(--ink-35); }
+  .modal-body{ padding:18px 18px 22px; }
+  .modal-meta{ display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+  .modal-title{ margin:0 0 12px; font-size:16px; font-weight:700; line-height:1.5; }
+  .modal-keywords{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
+  .modal-summary{ margin:0 0 20px; font-size:13.5px; color:var(--ink-55); line-height:1.7; }
+  .modal-footer{ display:flex; gap:10px; flex-wrap:wrap; }
+  .btn-youtube{
+    display:inline-flex; align-items:center; gap:8px; background:var(--seal); color:#fff;
+    font-family:inherit; font-size:14px; font-weight:700; padding:12px 20px;
+    border:none; border-radius:var(--radius); cursor:pointer; text-decoration:none;
+    transition:opacity .12s; -webkit-tap-highlight-color:transparent;
+  }
+  .btn-youtube:hover{ opacity:.88; }
+  .btn-youtube svg{ width:14px; height:14px; fill:#fff; flex:0 0 14px; }
+  .modal-close{
+    position:sticky; top:0; align-self:flex-end; margin:10px 10px 0 auto;
+    width:36px; height:36px; border-radius:50%; border:1px solid var(--ink-18);
+    background:var(--paper-card); cursor:pointer; display:flex; align-items:center; justify-content:center;
+    color:var(--ink-55); font-size:18px; line-height:1; z-index:2; -webkit-tap-highlight-color:transparent;
+  }
+  .modal-close:hover{ background:var(--paper); }
+
+  footer{
+    max-width:var(--max-w); margin:0 auto; padding:30px 18px 50px;
+    border-top:1px solid var(--ink-18); font-size:11.5px; color:var(--ink-35); line-height:1.8;
+  }
+  footer strong{ color:var(--ink-55); }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <p class="eyebrow"><span class="seal-dot"></span>中国語 解説動画アーカイブ</p>
+    <h1 class="logo">中国語 表現図鑑<span class="cn">中文词典</span></h1>
+    <p class="tagline">「あの表現、何が違うんだっけ？」を検索してすぐ思い出せる、現地で使う中国語の復習ノート。</p>
+    <div class="search-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="searchInput" type="search" inputmode="search" placeholder="例：了 / もらった / 就是 / 量詞" autocomplete="off">
+    </div>
+    <div class="filter-chips" id="filterChips">
+      <button class="chip active" data-genre="all">すべて</button>
+      <button class="chip" data-genre="使い分け">使い分け</button>
+      <button class="chip" data-genre="文法">文法</button>
+      <button class="chip" data-genre="語彙">語彙</button>
+      <button class="chip" data-genre="旅行">旅行</button>
+    </div>
+    <p class="result-count" id="resultCount"></p>
+  </div>
+</header>
+
+<main>
+  <!-- 読み込み中 -->
+  <div class="status-box show" id="loadingBox">
+    <div class="spinner"></div>
+    <p>データを読み込んでいます…</p>
+  </div>
+
+  <!-- 読み込みエラー -->
+  <div class="status-box" id="errorBox">
+    <div class="glyph"><span>?</span></div>
+    <h3>データを読み込めませんでした</h3>
+    <p class="sub" id="errorDetail"></p>
+  </div>
+
+  <div class="card-grid" id="cardGrid"></div>
+
+  <!-- 検索ゼロ件：リクエスト誘導 -->
+  <div class="empty-request" id="emptyRequest">
+    <div class="glyph"><span>未</span></div>
+    <h3>その表現、まだ解説していないかも</h3>
+    <p id="emptyRequestText">リクエストしてもらえたら、動画ネタの参考にします。</p>
+    <a class="btn-request" id="emptyRequestBtn" href="#" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+      この表現をリクエスト
+    </a>
+  </div>
+</main>
+
+<!-- 常設リクエストバナー -->
+<div class="request-banner" id="requestBanner" style="display:none;">
+  <div class="request-card">
+    <div class="request-text">
+      <h3><span class="pen">📝</span>解説してほしい表現はありますか？</h3>
+      <p>「これ気になる」「この違いが知りたい」など、リクエストは動画ネタの参考にします。気軽にどうぞ。</p>
+    </div>
+    <a class="btn-request" id="bannerRequestBtn" href="#" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+      リクエストを送る
+    </a>
+  </div>
+</div>
+
+<!-- モーダル -->
+<div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true">
+  <div class="modal" id="modal">
+    <button class="modal-close" id="modalClose" aria-label="閉じる">&#x2715;</button>
+    <div class="modal-slide" id="modalSlide">
+      <img id="modalImg" alt="スライド画像">
+      <div class="slide-placeholder" id="slidePlaceholder">
+        <div class="big-glyph"><span id="modalGlyph"></span></div>
+        <p>スライド画像を準備中</p>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-meta">
+        <span class="genre-tag" id="modalGenreTag"></span>
+        <span class="card-date" id="modalDate"></span>
+      </div>
+      <h2 class="modal-title" id="modalTitle"></h2>
+      <div class="modal-keywords" id="modalKeywords"></div>
+      <p class="modal-summary" id="modalSummary"></p>
+      <div class="modal-footer">
+        <a class="btn-youtube" id="modalYoutubeBtn" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M5 3l14 9-14 9V3z"/></svg>
+          YouTubeで見る
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <strong>中国語 表現図鑑</strong> ｜ 中国赴任・海外赴任の日本人向け、日常で使える中国語表現の解説アーカイブ<br>
+  対象：中国語キーワードを扱った解説動画のみ（vlog・雑談回は含みません）
+</footer>
+
+<script>
+/* ===================================================================
+   ▼ 設定：ここだけ書き換えれば動きます ▼
+   =================================================================== */
+
+// リクエスト用 Googleフォームの URL（まだ無ければ # のままでOK）
+// フォームを作ったら、ここに貼り替えるだけ。
+const REQUEST_FORM_URL = "#";
+
+// CSVファイルのパス（同じフォルダに videos.csv を置く想定）
+const CSV_PATH = "videos.csv";
+
+// スライド画像が入っているフォルダ
+const SLIDES_DIR = "slides/";
+
+/* =================================================================== */
+
+const GENRE_STYLE = {
+  '使い分け': { color: 'var(--seal)', bg: 'var(--seal-soft)' },
+  '文法':     { color: 'var(--jade)', bg: 'var(--jade-soft)' },
+  '語彙':     { color: 'var(--brass)', bg: 'var(--brass-soft)' },
+  '旅行':     { color: 'var(--sky)',  bg: 'var(--sky-soft)' },
+};
+
+let VIDEO_DATA = [];
+let sorted = [];
+let activeGenre = 'all';
+let searchTerm = '';
+
+const grid          = document.getElementById('cardGrid');
+const loadingBox    = document.getElementById('loadingBox');
+const errorBox      = document.getElementById('errorBox');
+const errorDetail   = document.getElementById('errorDetail');
+const emptyRequest  = document.getElementById('emptyRequest');
+const emptyReqText  = document.getElementById('emptyRequestText');
+const emptyReqBtn   = document.getElementById('emptyRequestBtn');
+const requestBanner = document.getElementById('requestBanner');
+const bannerReqBtn  = document.getElementById('bannerRequestBtn');
+const resultCount   = document.getElementById('resultCount');
+const searchInput   = document.getElementById('searchInput');
+const chips         = document.querySelectorAll('.chip');
+
+/* ---------- リクエストリンク設定 ---------- */
+function setupRequestLinks(){
+  const hasForm = REQUEST_FORM_URL && REQUEST_FORM_URL !== "#";
+  [bannerReqBtn, emptyReqBtn].forEach(btn => {
+    btn.href = hasForm ? REQUEST_FORM_URL : "#";
+    if(!hasForm){
+      btn.addEventListener('click', e => {
+        e.preventDefault();
+        alert("リクエストフォームは準備中です。\n（フォームURLを設定すると有効になります）");
+      });
+    }
+  });
+}
+
+/* ---------- CSVパーサ（簡易・ダブルクォート対応） ---------- */
+function parseCSV(text){
+  // BOM除去
+  text = text.replace(/^\uFEFF/, '');
+  const rows = [];
+  let row = [], field = '', inQuotes = false;
+  for(let i=0; i<text.length; i++){
+    const c = text[i], next = text[i+1];
+    if(inQuotes){
+      if(c === '"' && next === '"'){ field += '"'; i++; }
+      else if(c === '"'){ inQuotes = false; }
+      else { field += c; }
+    } else {
+      if(c === '"'){ inQuotes = true; }
+      else if(c === ','){ row.push(field); field = ''; }
+      else if(c === '\r'){ /* skip */ }
+      else if(c === '\n'){ row.push(field); rows.push(row); row=[]; field=''; }
+      else { field += c; }
+    }
+  }
+  if(field.length > 0 || row.length > 0){ row.push(field); rows.push(row); }
+  return rows.filter(r => r.length > 1 || (r.length===1 && r[0].trim() !== ''));
+}
+
+function csvToData(text){
+  const rows = parseCSV(text);
+  if(rows.length < 2) return [];
+  const header = rows[0].map(h => h.trim());
+  const idx = name => header.indexOf(name);
+  const iTitle = idx('タイトル'), iKw = idx('キーワード'), iSum = idx('要点'),
+        iGenre = idx('ジャンル'), iUrl = idx('動画URL'), iDate = idx('公開日'),
+        iImg = idx('画像ファイル名');
+  const out = [];
+  for(let r=1; r<rows.length; r++){
+    const row = rows[r];
+    const title = (row[iTitle]||'').trim();
+    const kwRaw = (row[iKw]||'').trim();
+    if(!title || !kwRaw) continue; // キーワード空欄はスキップ
+    out.push({
+      id: r,
+      title,
+      keywords: kwRaw.split('/').map(k => k.trim()).filter(Boolean),
+      summary: (row[iSum]||'').trim(),
+      genre: (row[iGenre]||'').trim(),
+      url: (row[iUrl]||'').trim(),
+      date: (row[iDate]||'').trim().slice(0,10),
+      image: iImg >= 0 ? (row[iImg]||'').trim() : ''
+    });
+  }
+  return out;
+}
+
+/* ---------- 描画 ---------- */
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function highlight(text, term){
+  const safe = escapeHtml(text);
+  if(!term) return safe;
+  try{
+    const re = new RegExp('(' + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+    return safe.replace(re, '<mark>$1</mark>');
+  }catch(e){ return safe; }
+}
+function matchesSearch(item, term){
+  if(!term) return true;
+  const hay = (item.title + ' ' + item.keywords.join(' ') + ' ' + item.summary).toLowerCase();
+  return hay.includes(term.toLowerCase());
+}
+
+function render(){
+  const term = searchTerm.trim();
+  const filtered = sorted.filter(item =>
+    (activeGenre === 'all' || item.genre === activeGenre) && matchesSearch(item, term)
+  );
+
+  resultCount.textContent = `全${VIDEO_DATA.length}件中 ${filtered.length}件を表示`;
+
+  if(filtered.length === 0){
+    grid.innerHTML = '';
+    // 検索語があるとき → リクエスト誘導、フィルターのみで0なら通常メッセージ
+    if(term){
+      emptyReqText.textContent = `「${term}」はまだ解説していないかもしれません。リクエストしてもらえたら、動画ネタの参考にします。`;
+    } else {
+      emptyReqText.textContent = `このジャンルの動画はまだありません。`;
+    }
+    emptyRequest.classList.add('show');
+    return;
+  }
+  emptyRequest.classList.remove('show');
+
+  grid.innerHTML = filtered.map(item => {
+    const style = GENRE_STYLE[item.genre] || GENRE_STYLE['語彙'];
+    const mainChar = (item.keywords[0] || item.title).trim().charAt(0);
+    const kwHtml = item.keywords.map(k => `<span class="kw-chip">${highlight(k, term)}</span>`).join('');
+    const thumb = item.image
+      ? `<img src="${escapeHtml(SLIDES_DIR + item.image)}" alt="" loading="lazy" onload="this.classList.add('loaded');this.closest('.glyph').classList.add('has-img')">`
+      : '';
+    return `
+      <div class="card" data-id="${item.id}" role="button" tabindex="0" style="--genre-color:${style.color};--genre-bg:${style.bg}">
+        <div class="glyph">${thumb}<span>${escapeHtml(mainChar)}</span></div>
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="genre-tag">${escapeHtml(item.genre)}</span>
+            <span class="card-date">${escapeHtml(item.date)}</span>
+          </div>
+          <h2 class="card-title">${highlight(item.title, term)}</h2>
+          <div class="keyword-chips">${kwHtml}</div>
+          <p class="card-summary">${highlight(item.summary, term)}</p>
+          <span class="card-link">スライドを見る
+            <svg viewBox="0 0 24 24"><path d="M5 3l14 9-14 9V3z"/></svg>
+          </span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ---------- モーダル ---------- */
+const overlay   = document.getElementById('modalOverlay');
+const closeBtn  = document.getElementById('modalClose');
+const modalSlide= document.getElementById('modalSlide');
+const modalImg  = document.getElementById('modalImg');
+const modalPh   = document.getElementById('slidePlaceholder');
+const modalGlyph= document.getElementById('modalGlyph');
+const modalGenreTag = document.getElementById('modalGenreTag');
+const modalDate = document.getElementById('modalDate');
+const modalTitle= document.getElementById('modalTitle');
+const modalKws  = document.getElementById('modalKeywords');
+const modalSum  = document.getElementById('modalSummary');
+const ytBtn     = document.getElementById('modalYoutubeBtn');
+
+function openModal(item){
+  const style = GENRE_STYLE[item.genre] || GENRE_STYLE['語彙'];
+  const mainChar = (item.keywords[0] || item.title).trim().charAt(0);
+  modalSlide.style.setProperty('--modal-genre-color', style.color);
+  modalGlyph.textContent = mainChar;
+
+  if(item.image){
+    modalImg.classList.remove('loaded');
+    modalImg.onload = () => { modalImg.classList.add('loaded'); modalPh.style.display = 'none'; };
+    modalImg.onerror = () => { modalImg.classList.remove('loaded'); modalPh.style.display = 'flex'; };
+    modalImg.src = SLIDES_DIR + item.image;
+  } else {
+    modalImg.classList.remove('loaded'); modalImg.src = ''; modalPh.style.display = 'flex';
+  }
+
+  modalGenreTag.textContent  = item.genre;
+  modalGenreTag.style.background = style.bg;
+  modalGenreTag.style.color  = style.color;
+  modalDate.textContent      = item.date;
+  modalTitle.textContent     = item.title;
+  modalKws.innerHTML         = item.keywords.map(k => `<span class="kw-chip">${escapeHtml(k)}</span>`).join('');
+  modalSum.textContent       = item.summary;
+  ytBtn.href                 = item.url;
+
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  closeBtn.focus();
+}
+function closeModal(){ overlay.classList.remove('open'); document.body.style.overflow = ''; }
+
+/* ---------- イベント ---------- */
+searchInput.addEventListener('input', e => { searchTerm = e.target.value; render(); });
+chips.forEach(chip => {
+  chip.addEventListener('click', () => {
+    chips.forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    activeGenre = chip.dataset.genre;
+    render();
+  });
+});
+grid.addEventListener('click', e => {
+  const card = e.target.closest('[data-id]');
+  if(!card) return;
+  const item = VIDEO_DATA.find(v => v.id === Number(card.dataset.id));
+  if(item) openModal(item);
+});
+grid.addEventListener('keydown', e => {
+  if(e.key === 'Enter' || e.key === ' '){
+    const card = e.target.closest('[data-id]');
+    if(!card) return;
+    e.preventDefault();
+    const item = VIDEO_DATA.find(v => v.id === Number(card.dataset.id));
+    if(item) openModal(item);
+  }
+});
+closeBtn.addEventListener('click', closeModal);
+overlay.addEventListener('click', e => { if(e.target === overlay) closeModal(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
+
+/* ---------- 起動：CSV読み込み ---------- */
+function showError(msg){
+  loadingBox.classList.remove('show');
+  errorBox.classList.add('show');
+  errorDetail.innerHTML = msg;
+  requestBanner.style.display = 'none';
+}
+
+function startApp(){
+  VIDEO_DATA.sort((a,b) => b.date.localeCompare(a.date));
+  sorted = [...VIDEO_DATA];
+  loadingBox.classList.remove('show');
+  requestBanner.style.display = 'block';
+  setupRequestLinks();
+  render();
+}
+
+fetch(CSV_PATH)
+  .then(res => {
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    return res.text();
+  })
+  .then(text => {
+    VIDEO_DATA = csvToData(text);
+    if(VIDEO_DATA.length === 0){
+      showError('CSVは読めましたが、表示できるデータがありませんでした。<br><code>videos.csv</code> の中身を確認してください。');
+      return;
+    }
+    startApp();
+  })
+  .catch(err => {
+    // file:// で開いた場合などはここに来る
+    const isFile = location.protocol === 'file:';
+    if(isFile){
+      showError(
+        'ローカルファイル（file://）から開くと、ブラウザの制限で <code>videos.csv</code> を読み込めません。<br><br>' +
+        'これは正常です。公開したサーバー上（GitHub Pages など）では正しく動きます。<br>' +
+        'Macで今すぐ確認したい場合は、簡易サーバーを立てる方法をご案内します。'
+      );
+    } else {
+      showError('<code>videos.csv</code> を読み込めませんでした（' + escapeHtml(err.message) + '）。<br>ファイルが同じ場所にあるか確認してください。');
+    }
+  });
+</script>
+
+</body>
+</html>
