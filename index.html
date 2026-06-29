@@ -228,14 +228,32 @@
     display:flex; flex-direction:column; -webkit-overflow-scrolling:touch;
   }
   .modal-slide{
-    width:100%; aspect-ratio:16/9; background:var(--paper);
+    width:100%; aspect-ratio:16/9; background:#1a1c19;
     border-bottom:1px solid var(--ink-18);
-    display:flex; align-items:center; justify-content:center;
     position:relative; overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
   }
-  .modal-slide img{ width:100%; height:100%; object-fit:contain; display:none; }
-  .modal-slide img.loaded{ display:block; }
-  .slide-placeholder{ display:flex; flex-direction:column; align-items:center; gap:8px; pointer-events:none; }
+  /* スライドを横に並べてスクロールスナップ */
+  .slide-track{
+    display:flex; width:100%; height:100%;
+    overflow-x:auto; scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .slide-track::-webkit-scrollbar{ display:none; }
+  .slide-item{
+    flex:0 0 100%; width:100%; height:100%;
+    scroll-snap-align:center;
+    display:flex; align-items:center; justify-content:center;
+    background:#1a1c19;
+  }
+  .slide-item img{ width:100%; height:100%; object-fit:contain; display:block; }
+
+  /* プレースホルダー（画像なし時） */
+  .slide-placeholder{
+    width:100%; height:100%; background:var(--paper);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
+  }
   .slide-placeholder .big-glyph{
     width:72px; height:72px; border:1.5px solid var(--modal-genre-color, var(--ink-35));
     background:var(--paper-card); position:relative;
@@ -247,6 +265,44 @@
     font-family:'Noto Serif SC',serif; font-size:36px; font-weight:700; color:var(--modal-genre-color, var(--ink-55));
   }
   .slide-placeholder p{ margin:0; font-size:12px; letter-spacing:.05em; color:var(--ink-35); }
+
+  /* 左右の矢印ボタン */
+  .slide-nav{
+    position:absolute; top:50%; transform:translateY(-50%);
+    width:38px; height:38px; border-radius:50%;
+    border:none; background:rgba(0,0,0,.4); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; z-index:3; transition:background .15s;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .slide-nav:hover{ background:rgba(0,0,0,.6); }
+  .slide-nav:disabled{ opacity:0; pointer-events:none; }
+  .slide-nav.prev{ left:8px; }
+  .slide-nav.next{ right:8px; }
+  .slide-nav svg{ width:18px; height:18px; stroke:#fff; fill:none; stroke-width:2.5; }
+  .slide-nav.hidden{ display:none; }
+
+  /* 枚数カウンター */
+  .slide-counter{
+    position:absolute; bottom:10px; right:12px; z-index:3;
+    background:rgba(0,0,0,.55); color:#fff;
+    font-size:11.5px; font-weight:600; letter-spacing:.03em;
+    padding:3px 9px; border-radius:999px;
+  }
+  .slide-counter.hidden{ display:none; }
+
+  /* ドット */
+  .slide-dots{
+    position:absolute; bottom:10px; left:50%; transform:translateX(-50%);
+    display:flex; gap:6px; z-index:3;
+  }
+  .slide-dots.hidden{ display:none; }
+  .slide-dots .dot{
+    width:6px; height:6px; border-radius:50%;
+    background:rgba(255,255,255,.45); transition:background .15s, transform .15s;
+  }
+  .slide-dots .dot.active{ background:#fff; transform:scale(1.3); }
+
   .modal-body{ padding:18px 18px 22px; }
   .modal-meta{ display:flex; align-items:center; gap:8px; margin-bottom:10px; }
   .modal-title{ margin:0 0 12px; font-size:16px; font-weight:700; line-height:1.5; }
@@ -345,11 +401,15 @@
   <div class="modal" id="modal">
     <button class="modal-close" id="modalClose" aria-label="閉じる">&#x2715;</button>
     <div class="modal-slide" id="modalSlide">
-      <img id="modalImg" alt="スライド画像">
-      <div class="slide-placeholder" id="slidePlaceholder">
-        <div class="big-glyph"><span id="modalGlyph"></span></div>
-        <p>スライド画像を準備中</p>
-      </div>
+      <button class="slide-nav prev" id="slidePrev" aria-label="前のスライド">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="slide-track" id="slideTrack"></div>
+      <button class="slide-nav next" id="slideNext" aria-label="次のスライド">
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <div class="slide-dots" id="slideDots"></div>
+      <div class="slide-counter" id="slideCounter"></div>
     </div>
     <div class="modal-body">
       <div class="modal-meta">
@@ -461,13 +521,30 @@ function csvToData(text){
   const idx = name => header.indexOf(name);
   const iTitle = idx('タイトル'), iKw = idx('キーワード'), iSum = idx('要点'),
         iGenre = idx('ジャンル'), iUrl = idx('動画URL'), iDate = idx('公開日'),
-        iImg = idx('画像ファイル名');
+        iFolder = idx('スライドフォルダ'), iCount = idx('スライド枚数'),
+        iImg = idx('画像ファイル名'); // 旧形式の後方互換
   const out = [];
   for(let r=1; r<rows.length; r++){
     const row = rows[r];
     const title = (row[iTitle]||'').trim();
     const kwRaw = (row[iKw]||'').trim();
     if(!title || !kwRaw) continue; // キーワード空欄はスキップ
+
+    // スライド画像の組み立て
+    let slides = [];
+    const folder = iFolder >= 0 ? (row[iFolder]||'').trim() : '';
+    const count  = iCount >= 0 ? parseInt((row[iCount]||'').trim(), 10) : 0;
+    if(folder && count > 0){
+      // slides/フォルダ名/001.png … 3桁連番で組み立て（Keynoteの書き出しに準拠）
+      for(let n=1; n<=count; n++){
+        const num = String(n).padStart(3, '0');
+        slides.push(SLIDES_DIR + folder + '/' + num + '.png');
+      }
+    } else if(iImg >= 0 && (row[iImg]||'').trim()){
+      // 旧形式：単一画像ファイル名
+      slides.push(SLIDES_DIR + (row[iImg]||'').trim());
+    }
+
     out.push({
       id: r,
       title,
@@ -476,7 +553,7 @@ function csvToData(text){
       genre: (row[iGenre]||'').trim(),
       url: (row[iUrl]||'').trim(),
       date: (row[iDate]||'').trim().slice(0,10),
-      image: iImg >= 0 ? (row[iImg]||'').trim() : ''
+      slides: slides
     });
   }
   return out;
@@ -525,9 +602,13 @@ function render(){
     const style = GENRE_STYLE[item.genre] || GENRE_STYLE['語彙'];
     const mainChar = (item.keywords[0] || item.title).trim().charAt(0);
     const kwHtml = item.keywords.map(k => `<span class="kw-chip">${highlight(k, term)}</span>`).join('');
-    const thumb = item.image
-      ? `<img src="${escapeHtml(SLIDES_DIR + item.image)}" alt="" loading="lazy" onload="this.classList.add('loaded');this.closest('.glyph').classList.add('has-img')">`
+    const firstSlide = item.slides && item.slides.length ? item.slides[0] : '';
+    const thumb = firstSlide
+      ? `<img src="${escapeHtml(firstSlide)}" alt="" loading="lazy" onload="this.classList.add('loaded');this.closest('.glyph').classList.add('has-img')">`
       : '';
+    const linkLabel = (item.slides && item.slides.length > 1)
+      ? `スライド${item.slides.length}枚を見る`
+      : 'スライドを見る';
     return `
       <div class="card" data-id="${item.id}" role="button" tabindex="0" style="--genre-color:${style.color};--genre-bg:${style.bg}">
         <div class="glyph">${thumb}<span>${escapeHtml(mainChar)}</span></div>
@@ -539,7 +620,7 @@ function render(){
           <h2 class="card-title">${highlight(item.title, term)}</h2>
           <div class="keyword-chips">${kwHtml}</div>
           <p class="card-summary">${highlight(item.summary, term)}</p>
-          <span class="card-link">スライドを見る
+          <span class="card-link">${escapeHtml(linkLabel)}
             <svg viewBox="0 0 24 24"><path d="M5 3l14 9-14 9V3z"/></svg>
           </span>
         </div>
@@ -548,13 +629,15 @@ function render(){
   }).join('');
 }
 
-/* ---------- モーダル ---------- */
+/* ---------- モーダル（スライドめくり対応） ---------- */
 const overlay   = document.getElementById('modalOverlay');
 const closeBtn  = document.getElementById('modalClose');
 const modalSlide= document.getElementById('modalSlide');
-const modalImg  = document.getElementById('modalImg');
-const modalPh   = document.getElementById('slidePlaceholder');
-const modalGlyph= document.getElementById('modalGlyph');
+const slideTrack= document.getElementById('slideTrack');
+const slidePrev = document.getElementById('slidePrev');
+const slideNext = document.getElementById('slideNext');
+const slideDots = document.getElementById('slideDots');
+const slideCounter = document.getElementById('slideCounter');
 const modalGenreTag = document.getElementById('modalGenreTag');
 const modalDate = document.getElementById('modalDate');
 const modalTitle= document.getElementById('modalTitle');
@@ -562,20 +645,91 @@ const modalKws  = document.getElementById('modalKeywords');
 const modalSum  = document.getElementById('modalSummary');
 const ytBtn     = document.getElementById('modalYoutubeBtn');
 
+let currentSlides = [];
+let currentIndex = 0;
+
+function buildSlides(item, style, mainChar){
+  currentSlides = item.slides || [];
+  currentIndex = 0;
+  slideTrack.innerHTML = '';
+
+  if(currentSlides.length === 0){
+    // 画像なし → プレースホルダー1枚
+    const ph = document.createElement('div');
+    ph.className = 'slide-item';
+    ph.innerHTML = `
+      <div class="slide-placeholder">
+        <div class="big-glyph"><span>${escapeHtml(mainChar)}</span></div>
+        <p>スライド画像を準備中</p>
+      </div>`;
+    slideTrack.appendChild(ph);
+  } else {
+    currentSlides.forEach((src, i) => {
+      const item = document.createElement('div');
+      item.className = 'slide-item';
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = `スライド ${i+1}`;
+      img.loading = i === 0 ? 'eager' : 'lazy';
+      // 読み込み失敗時はプレースホルダー風に
+      img.onerror = () => {
+        item.innerHTML = `<div class="slide-placeholder"><div class="big-glyph"><span>${escapeHtml(mainChar)}</span></div><p>画像が見つかりません</p></div>`;
+      };
+      item.appendChild(img);
+      slideTrack.appendChild(item);
+    });
+  }
+
+  // ドット生成
+  slideDots.innerHTML = '';
+  const n = Math.max(currentSlides.length, 1);
+  for(let i=0; i<n; i++){
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i===0 ? ' active' : '');
+    slideDots.appendChild(dot);
+  }
+
+  const multi = currentSlides.length > 1;
+  slidePrev.classList.toggle('hidden', !multi);
+  slideNext.classList.toggle('hidden', !multi);
+  slideDots.classList.toggle('hidden', !multi);
+  slideCounter.classList.toggle('hidden', !multi);
+  updateSlideUI();
+}
+
+function updateSlideUI(){
+  const total = Math.max(currentSlides.length, 1);
+  slideCounter.textContent = `${currentIndex+1} / ${total}`;
+  slidePrev.disabled = currentIndex <= 0;
+  slideNext.disabled = currentIndex >= currentSlides.length - 1;
+  [...slideDots.children].forEach((d, i) => d.classList.toggle('active', i === currentIndex));
+}
+
+function goToSlide(i){
+  if(currentSlides.length === 0) return;
+  currentIndex = Math.max(0, Math.min(i, currentSlides.length - 1));
+  const w = slideTrack.clientWidth;
+  slideTrack.scrollTo({ left: w * currentIndex, behavior: 'smooth' });
+  updateSlideUI();
+}
+
+// スワイプ位置に追従してドット・カウンターを更新
+slideTrack.addEventListener('scroll', () => {
+  const w = slideTrack.clientWidth;
+  if(w === 0) return;
+  const i = Math.round(slideTrack.scrollLeft / w);
+  if(i !== currentIndex){ currentIndex = i; updateSlideUI(); }
+});
+
+slidePrev.addEventListener('click', () => goToSlide(currentIndex - 1));
+slideNext.addEventListener('click', () => goToSlide(currentIndex + 1));
+
 function openModal(item){
   const style = GENRE_STYLE[item.genre] || GENRE_STYLE['語彙'];
   const mainChar = (item.keywords[0] || item.title).trim().charAt(0);
   modalSlide.style.setProperty('--modal-genre-color', style.color);
-  modalGlyph.textContent = mainChar;
 
-  if(item.image){
-    modalImg.classList.remove('loaded');
-    modalImg.onload = () => { modalImg.classList.add('loaded'); modalPh.style.display = 'none'; };
-    modalImg.onerror = () => { modalImg.classList.remove('loaded'); modalPh.style.display = 'flex'; };
-    modalImg.src = SLIDES_DIR + item.image;
-  } else {
-    modalImg.classList.remove('loaded'); modalImg.src = ''; modalPh.style.display = 'flex';
-  }
+  buildSlides(item, style, mainChar);
 
   modalGenreTag.textContent  = item.genre;
   modalGenreTag.style.background = style.bg;
@@ -588,6 +742,8 @@ function openModal(item){
 
   overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
+  // スクロール位置リセット
+  slideTrack.scrollLeft = 0;
   closeBtn.focus();
 }
 function closeModal(){ overlay.classList.remove('open'); document.body.style.overflow = ''; }
@@ -619,7 +775,12 @@ grid.addEventListener('keydown', e => {
 });
 closeBtn.addEventListener('click', closeModal);
 overlay.addEventListener('click', e => { if(e.target === overlay) closeModal(); });
-document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
+document.addEventListener('keydown', e => {
+  if(!overlay.classList.contains('open')) return;
+  if(e.key === 'Escape'){ closeModal(); }
+  else if(e.key === 'ArrowLeft'){ goToSlide(currentIndex - 1); }
+  else if(e.key === 'ArrowRight'){ goToSlide(currentIndex + 1); }
+});
 
 /* ---------- 起動：CSV読み込み ---------- */
 function showError(msg){
