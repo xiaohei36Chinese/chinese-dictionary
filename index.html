@@ -359,8 +359,10 @@
     padding:6px;
   }
   .lightbox-frame img{
-    max-width:100%; max-height:100%;
+    /* フレーム全体を使い、アスペクト比を保ったまま最大まで引き伸ばす */
+    width:96vw; height:90vh;
     object-fit:contain; display:block;
+    image-rendering:auto;
   }
   .lightbox-close{
     position:absolute; top:16px; right:18px; z-index:3;
