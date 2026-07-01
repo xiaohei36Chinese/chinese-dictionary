@@ -341,19 +341,26 @@
   /* ---------- 全画面ライトボックス ---------- */
   .lightbox{
     display:none; position:fixed; inset:0; z-index:200;
-    background:rgba(15,16,14,.96);
-    align-items:center; justify-content:center;
+    background:rgba(15,16,14,.97);
+    flex-direction:column;
   }
   .lightbox.open{ display:flex; }
-  .lightbox-stage{
-    width:100%; height:100%;
-    display:flex; align-items:center; justify-content:center;
-    padding:24px;
+  /* スワイプできるトラック */
+  .lightbox-track{
+    flex:1; display:flex; width:100%;
+    overflow-x:auto; scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch; scrollbar-width:none;
   }
-  .lightbox-stage img{
+  .lightbox-track::-webkit-scrollbar{ display:none; }
+  .lightbox-frame{
+    flex:0 0 100%; width:100%; height:100%;
+    scroll-snap-align:center;
+    display:flex; align-items:center; justify-content:center;
+    padding:6px;
+  }
+  .lightbox-frame img{
     max-width:100%; max-height:100%;
     object-fit:contain; display:block;
-    box-shadow:0 8px 40px rgba(0,0,0,.5);
   }
   .lightbox-close{
     position:absolute; top:16px; right:18px; z-index:3;
@@ -500,7 +507,7 @@
   <button class="lightbox-nav prev" id="lightboxPrev" aria-label="前のスライド">
     <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
   </button>
-  <div class="lightbox-stage"><img id="lightboxImg" alt="スライド拡大表示"></div>
+  <div class="lightbox-track" id="lightboxTrack"></div>
   <button class="lightbox-nav next" id="lightboxNext" aria-label="次のスライド">
     <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
   </button>
@@ -805,49 +812,65 @@ slideTrack.addEventListener('scroll', () => {
 slidePrev.addEventListener('click', () => goToSlide(currentIndex - 1));
 slideNext.addEventListener('click', () => goToSlide(currentIndex + 1));
 
-/* ---------- 全画面ライトボックス ---------- */
+/* ---------- 全画面ライトボックス（スワイプ対応） ---------- */
 const lightbox      = document.getElementById('lightbox');
-const lightboxImg   = document.getElementById('lightboxImg');
+const lightboxTrack = document.getElementById('lightboxTrack');
 const lightboxClose = document.getElementById('lightboxClose');
 const lightboxPrev  = document.getElementById('lightboxPrev');
 const lightboxNext  = document.getElementById('lightboxNext');
 const lightboxCounter = document.getElementById('lightboxCounter');
-const expandHint    = document.getElementById('expandHint');
 let lightboxIndex = 0;
 
 function openLightbox(i){
   if(currentSlides.length === 0) return;
   lightboxIndex = i;
-  updateLightbox();
-  lightbox.classList.add('open');
-}
-function updateLightbox(){
-  lightboxImg.src = currentSlides[lightboxIndex];
-  const total = currentSlides.length;
-  lightboxCounter.textContent = `${lightboxIndex+1} / ${total}`;
-  const multi = total > 1;
+  // トラックを組み立て
+  lightboxTrack.innerHTML = '';
+  currentSlides.forEach((src, n) => {
+    const frame = document.createElement('div');
+    frame.className = 'lightbox-frame';
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = `スライド ${n+1}`;
+    frame.appendChild(img);
+    lightboxTrack.appendChild(frame);
+  });
+  const multi = currentSlides.length > 1;
   lightboxPrev.classList.toggle('hidden', !multi);
   lightboxNext.classList.toggle('hidden', !multi);
   lightboxCounter.classList.toggle('hidden', !multi);
+  lightbox.classList.add('open');
+  // 開いた直後に該当スライドへジャンプ（アニメなし）
+  requestAnimationFrame(() => {
+    lightboxTrack.scrollLeft = lightboxTrack.clientWidth * lightboxIndex;
+    updateLightboxUI();
+  });
+}
+function updateLightboxUI(){
+  const total = currentSlides.length;
+  lightboxCounter.textContent = `${lightboxIndex+1} / ${total}`;
   lightboxPrev.disabled = lightboxIndex <= 0;
   lightboxNext.disabled = lightboxIndex >= total - 1;
 }
 function lightboxGo(i){
   lightboxIndex = Math.max(0, Math.min(i, currentSlides.length - 1));
-  updateLightbox();
+  lightboxTrack.scrollTo({ left: lightboxTrack.clientWidth * lightboxIndex, behavior: 'smooth' });
+  updateLightboxUI();
 }
 function closeLightbox(){
   lightbox.classList.remove('open');
-  // モーダル側も拡大中のスライドに合わせておく
-  goToSlide(lightboxIndex);
+  goToSlide(lightboxIndex); // モーダル側も同じ位置に合わせる
 }
+// スワイプ追従
+lightboxTrack.addEventListener('scroll', () => {
+  const w = lightboxTrack.clientWidth;
+  if(w === 0) return;
+  const i = Math.round(lightboxTrack.scrollLeft / w);
+  if(i !== lightboxIndex){ lightboxIndex = i; updateLightboxUI(); }
+});
 lightboxClose.addEventListener('click', closeLightbox);
 lightboxPrev.addEventListener('click', () => lightboxGo(lightboxIndex - 1));
 lightboxNext.addEventListener('click', () => lightboxGo(lightboxIndex + 1));
-lightbox.addEventListener('click', e => {
-  // 画像や矢印以外（背景）をタップしたら閉じる
-  if(e.target === lightbox || e.target.classList.contains('lightbox-stage')) closeLightbox();
-});
 
 function openModal(item){
   const style = GENRE_STYLE[item.genre] || GENRE_STYLE['語彙'];
