@@ -696,16 +696,12 @@ function render(){
     const style = GENRE_STYLE[item.genre] || GENRE_STYLE['語彙'];
     const mainChar = (item.keywords[0] || item.title).trim().charAt(0);
     const kwHtml = item.keywords.map(k => `<span class="kw-chip">${highlight(k, term)}</span>`).join('');
-    const firstSlide = item.slides && item.slides.length ? item.slides[0] : '';
-    const thumb = firstSlide
-      ? `<img src="${escapeHtml(firstSlide)}" alt="" loading="lazy" onload="this.classList.add('loaded');this.closest('.glyph').classList.add('has-img')">`
-      : '';
     const linkLabel = (item.slides && item.slides.length > 1)
       ? `スライド${item.slides.length}枚を見る`
       : 'スライドを見る';
     return `
       <div class="card" data-id="${item.id}" role="button" tabindex="0" style="--genre-color:${style.color};--genre-bg:${style.bg}">
-        <div class="glyph">${thumb}<span>${escapeHtml(mainChar)}</span></div>
+        <div class="glyph"><span>${escapeHtml(mainChar)}</span></div>
         <div class="card-body">
           <div class="card-meta">
             <span class="genre-tag">${escapeHtml(item.genre)}</span>
