@@ -359,10 +359,17 @@
     padding:6px;
   }
   .lightbox-frame img{
-    /* フレーム全体を使い、アスペクト比を保ったまま最大まで引き伸ばす */
-    width:96vw; height:90vh;
+    /* 既定はアスペクト比維持で画面内に収める */
+    width:auto; height:auto;
+    max-width:min(96vw, 1440px);
+    max-height:90vh;
     object-fit:contain; display:block;
     image-rendering:auto;
+  }
+  /* 元画像の1.5倍を目標幅に（画面を超える分は上のmaxで抑制） */
+  .lightbox-frame img[data-scaled]{
+    width:var(--lb-w, auto);
+    height:auto;
   }
   .lightbox-close{
     position:absolute; top:16px; right:18px; z-index:3;
@@ -834,6 +841,12 @@ function openLightbox(i){
     const img = document.createElement('img');
     img.src = src;
     img.alt = `スライド ${n+1}`;
+    // 読み込めたら「元サイズの1.5倍」を上限に設定（画面をはみ出す分はCSSのmaxで抑制）
+    img.addEventListener('load', () => {
+      const targetW = img.naturalWidth * 1.5;
+      img.style.setProperty('--lb-w', targetW + 'px');
+      img.setAttribute('data-scaled', '');
+    });
     frame.appendChild(img);
     lightboxTrack.appendChild(frame);
   });
