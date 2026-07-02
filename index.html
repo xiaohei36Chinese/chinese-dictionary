@@ -136,6 +136,12 @@
     padding:2px 8px; border-radius:999px; background:var(--genre-bg); color:var(--genre-color);
   }
   .card-date{ font-size:11px; color:var(--ink-35); }
+  .card-no{
+    font-size:10.5px; font-weight:700; letter-spacing:.03em;
+    color:var(--ink-55); font-variant-numeric:tabular-nums;
+    padding:2px 7px; border:1px solid var(--ink-18); border-radius:999px;
+    background:var(--paper);
+  }
   .card-title{ margin:0 0 7px; font-size:14.5px; font-weight:700; line-height:1.5; }
   .keyword-chips{ display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px; }
   .kw-chip{
@@ -494,6 +500,7 @@
     </div>
     <div class="modal-body">
       <div class="modal-meta">
+        <span class="card-no" id="modalNo" style="display:none;"></span>
         <span class="genre-tag" id="modalGenreTag"></span>
         <span class="card-date" id="modalDate"></span>
       </div>
@@ -616,6 +623,7 @@ function csvToData(text){
   const iTitle = idx('タイトル'), iKw = idx('キーワード'), iSum = idx('要点'),
         iGenre = idx('ジャンル'), iUrl = idx('動画URL'), iDate = idx('公開日'),
         iFolder = idx('スライドフォルダ'), iCount = idx('スライド枚数'),
+        iNo = idx('No.'),
         iImg = idx('画像ファイル名'); // 旧形式の後方互換
   const out = [];
   for(let r=1; r<rows.length; r++){
@@ -641,6 +649,7 @@ function csvToData(text){
 
     out.push({
       id: r,
+      no: iNo >= 0 ? (row[iNo]||'').trim() : '',
       title,
       keywords: kwRaw.split('/').map(k => k.trim()).filter(Boolean),
       summary: (row[iSum]||'').trim(),
@@ -729,6 +738,7 @@ const slideNext = document.getElementById('slideNext');
 const slideDots = document.getElementById('slideDots');
 const slideCounter = document.getElementById('slideCounter');
 const modalGenreTag = document.getElementById('modalGenreTag');
+const modalNo = document.getElementById('modalNo');
 const modalDate = document.getElementById('modalDate');
 const modalTitle= document.getElementById('modalTitle');
 const modalKws  = document.getElementById('modalKeywords');
@@ -893,6 +903,7 @@ function openModal(item){
   modalGenreTag.textContent  = item.genre;
   modalGenreTag.style.background = style.bg;
   modalGenreTag.style.color  = style.color;
+  modalNo.style.display = 'none';
   modalDate.textContent      = item.date;
   modalTitle.textContent     = item.title;
   modalKws.innerHTML         = item.keywords.map(k => `<span class="kw-chip">${escapeHtml(k)}</span>`).join('');
