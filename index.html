@@ -544,6 +544,11 @@
 // フォームを作ったら、ここに貼り替えるだけ。
 const REQUEST_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSc62mgN8ilt2LhU3vM-jkOB6nNTSQdg40POVf0XN-cQNMtIbg/viewform";
 
+// 検索語をフォームに自動入力するための「入力欄ID」。
+// Googleフォームの「事前入力したURLを取得」で得られる entry.XXXXXXXXX の数字部分。
+// 空("")のままなら、検索語の引き継ぎはせず通常のフォームを開く。
+const REQUEST_FORM_ENTRY_ID = "7823530";
+
 // CSVファイルのパス（同じフォルダに videos.csv を置く想定）
 const CSV_PATH = "videos.csv";
 
@@ -589,6 +594,17 @@ function setupRequestLinks(){
       });
     }
   });
+}
+
+// 検索語を引き継いだフォームURLを作る（entry IDが設定されていれば付与）
+function buildRequestUrl(term){
+  if(!REQUEST_FORM_URL || REQUEST_FORM_URL === "#") return "#";
+  if(REQUEST_FORM_ENTRY_ID && term){
+    const sep = REQUEST_FORM_URL.includes("?") ? "&" : "?";
+    return REQUEST_FORM_URL + sep + "usp=pp_url&entry." +
+           REQUEST_FORM_ENTRY_ID + "=" + encodeURIComponent(term);
+  }
+  return REQUEST_FORM_URL;
 }
 
 /* ---------- CSVパーサ（簡易・ダブルクォート対応） ---------- */
@@ -693,8 +709,11 @@ function render(){
     // 検索語があるとき → リクエスト誘導、フィルターのみで0なら通常メッセージ
     if(term){
       emptyReqText.textContent = `「${term}」はまだ解説していないかもしれません。リクエストしてもらえたら、動画ネタの参考にします。`;
+      // 検索語をリクエストフォームに引き継ぐ
+      emptyReqBtn.href = buildRequestUrl(term);
     } else {
       emptyReqText.textContent = `このジャンルの動画はまだありません。`;
+      emptyReqBtn.href = buildRequestUrl("");
     }
     emptyRequest.classList.add('show');
     return;
