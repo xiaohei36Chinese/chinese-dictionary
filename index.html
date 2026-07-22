@@ -35,7 +35,7 @@
     --sky:#3A6275;
     --sky-soft:rgba(58,98,117,.13);
     --radius:2px;
-    --max-w:1080px;
+    --max-w:1320px;
   }
 
   *{box-sizing:border-box;}
@@ -104,11 +104,64 @@
 
   .result-count{ margin-top:10px; font-size:12px; color:var(--ink-35); letter-spacing:.03em; }
 
+  /* ---------- タブ切り替え ---------- */
+  .tabs{
+    display:flex; border:1.5px solid var(--ink-18); border-radius:6px; overflow:hidden;
+    background:var(--paper-card); margin-top:14px;
+  }
+  .tab{
+    flex:1; display:flex; align-items:center; justify-content:center; gap:8px;
+    padding:13px 10px; font-family:inherit; font-size:14.5px; font-weight:700; color:var(--ink-55);
+    background:transparent; border:none; cursor:pointer; transition:background .15s, color .15s;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .tab:first-child{ border-right:1.5px solid var(--ink-18); }
+  .tab .ic{ display:inline-flex; align-items:center; justify-content:center; }
+  .tab .ic svg{ width:16px; height:16px; }
+  .tab.active{ background:var(--seal); color:#fff; }
+  .tab .count{ font-size:11px; font-weight:600; opacity:.7; }
+
+  /* パネル表示切り替え */
+  .panel{ display:none; }
+  .panel.show{ display:block; }
+
+  /* ---------- 再生リスト ---------- */
+  .pl-intro{ margin:2px 0 0; }
+  .pl-intro p{ margin:0; font-size:12.5px; color:var(--ink-55); }
+  .pl-grid{
+    display:grid; grid-template-columns:1fr; gap:10px; margin-top:14px;
+  }
+  @media(min-width:560px){ .pl-grid{ grid-template-columns:1fr 1fr; } }
+  @media(min-width:860px){ .pl-grid{ grid-template-columns:1fr 1fr 1fr; } }
+  @media(min-width:1120px){ .pl-grid{ grid-template-columns:1fr 1fr 1fr 1fr; } }
+  .pl-card{
+    display:flex; align-items:center; gap:12px; background:var(--paper-card);
+    border:1px solid var(--ink-18); border-radius:var(--radius); padding:13px 14px;
+    text-decoration:none; color:inherit; cursor:pointer;
+    transition:transform .12s, box-shadow .12s, background .12s;
+  }
+  .pl-card:hover{ background:var(--paper-card-hover); box-shadow:0 4px 14px rgba(32,35,31,.08); transform:translateY(-1px); }
+  .pl-card:active{ transform:translateY(0); }
+  .pl-thumb{
+    flex:0 0 44px; width:44px; height:44px; border-radius:3px; background:var(--seal-soft);
+    border:1px solid var(--seal); display:flex; align-items:center; justify-content:center; position:relative;
+  }
+  .pl-thumb .cn{ font-family:'Noto Serif SC','Noto Sans JP',serif; font-size:21px; font-weight:700; color:var(--seal); }
+  .pl-thumb .play{
+    position:absolute; right:-6px; bottom:-6px; width:19px; height:19px; background:var(--seal);
+    border-radius:50%; display:flex; align-items:center; justify-content:center; border:2px solid var(--paper-card);
+  }
+  .pl-thumb .play svg{ width:8px; height:8px; fill:#fff; margin-left:1px; }
+  .pl-body{ min-width:0; }
+  .pl-title{ font-size:13px; font-weight:700; line-height:1.4; margin:0 0 2px; }
+  .pl-meta{ font-size:11px; color:var(--ink-35); margin:0; }
+
   /* ---------- main / cards ---------- */
   main{ max-width:var(--max-w); margin:0 auto; padding:18px 18px 40px; }
   .card-grid{ display:grid; grid-template-columns:1fr; gap:12px; }
-  @media(min-width:680px){ .card-grid{ grid-template-columns:1fr 1fr; } }
-  @media(min-width:1000px){ .card-grid{ grid-template-columns:1fr 1fr 1fr; } }
+  @media(min-width:560px){ .card-grid{ grid-template-columns:1fr 1fr; } }
+  @media(min-width:860px){ .card-grid{ grid-template-columns:1fr 1fr 1fr; } }
+  @media(min-width:1120px){ .card-grid{ grid-template-columns:1fr 1fr 1fr 1fr; } }
 
   .card{
     display:flex; gap:13px; background:var(--paper-card);
@@ -430,10 +483,23 @@
     <p class="eyebrow"><span class="seal-dot"></span>中国語 解説動画アーカイブ</p>
     <h1 class="logo">中国語 表現図鑑<span class="cn">中文词典</span></h1>
     <p class="tagline">「あの表現、何が違うんだっけ？」を検索してすぐ思い出せる、現地で使う中国語の復習ノート。</p>
-    <div class="search-row">
+    <div class="search-row" id="searchRow">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input id="searchInput" type="search" inputmode="search" placeholder="例：了 / もらった / 就是 / 量詞" autocomplete="off">
     </div>
+
+    <!-- タブ切り替え -->
+    <div class="tabs" id="tabs">
+      <button class="tab active" id="tabSlides" type="button">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="14" rx="1"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="18"/></svg></span>
+        スライドで探す <span class="count" id="tabSlidesCount"></span>
+      </button>
+      <button class="tab" id="tabVideos" type="button">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 3l14 9-14 9V3z"/></svg></span>
+        動画で学ぶ <span class="count">10</span>
+      </button>
+    </div>
+
     <div class="filter-chips" id="filterChips">
       <button class="chip active" data-genre="all">すべて</button>
       <button class="chip" data-genre="使い分け">使い分け</button>
@@ -459,17 +525,26 @@
     <p class="sub" id="errorDetail"></p>
   </div>
 
-  <div class="card-grid" id="cardGrid"></div>
+  <!-- パネル：スライドで探す -->
+  <div class="panel show" id="panelSlides">
+    <div class="card-grid" id="cardGrid"></div>
 
-  <!-- 検索ゼロ件：リクエスト誘導 -->
-  <div class="empty-request" id="emptyRequest">
-    <div class="glyph"><span>未</span></div>
-    <h3>その表現、まだ解説していないかも</h3>
-    <p id="emptyRequestText">リクエストしてもらえたら、動画ネタの参考にします。</p>
-    <a class="btn-request" id="emptyRequestBtn" href="#" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-      この表現をリクエスト
-    </a>
+    <!-- 検索ゼロ件：リクエスト誘導 -->
+    <div class="empty-request" id="emptyRequest">
+      <div class="glyph"><span>未</span></div>
+      <h3>その表現、まだ解説していないかも</h3>
+      <p id="emptyRequestText">リクエストしてもらえたら、動画ネタの参考にします。</p>
+      <a class="btn-request" id="emptyRequestBtn" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+        この表現をリクエスト
+      </a>
+    </div>
+  </div>
+
+  <!-- パネル：動画で学ぶ（再生リスト） -->
+  <div class="panel" id="panelVideos">
+    <div class="pl-intro"><p>関連する回をまとめた再生リスト。動画で通して学びたいときはこちらから。</p></div>
+    <div class="pl-grid" id="playlistGrid"></div>
   </div>
 </main>
 
@@ -562,6 +637,22 @@ const CSV_PATH = "videos.csv";
 
 // スライド画像が入っているフォルダ
 const SLIDES_DIR = "slides/";
+
+// ▼ YouTube再生リスト（「動画で学ぶ」タブに表示）
+//   追加・変更するときは、この配列に1行足す/直すだけ。
+//   char = カードに表示する漢字、name = リスト名、url = 再生リストのURL
+const PLAYLISTS = [
+  { char: "了", name: "「了」と時間・アスペクト",        url: "https://www.youtube.com/playlist?list=PLQTFqOWCvrUY" },
+  { char: "能", name: "助動詞・推測（できる・すべき・たぶん）", url: "https://www.youtube.com/playlist?list=PLWG6yjOVTGWE" },
+  { char: "很", name: "程度・比較の表現",              url: "https://www.youtube.com/playlist?list=PLELLGLfw0QC0" },
+  { char: "这", name: "指示・存在・疑問のことば",        url: "https://www.youtube.com/playlist?list=PLEfoXO9tg5nk" },
+  { char: "如", name: "接続・条件の言い方",            url: "https://www.youtube.com/playlist?list=PLMD6voiZ4QTI" },
+  { char: "就", name: "限定・強調（就・只・而已）",      url: "https://www.youtube.com/playlist?list=PLHRdpMlGtzJY" },
+  { char: "着", name: "多義語をコアイメージで攻略",      url: "https://www.youtube.com/playlist?list=PLJk9qR5hGxKk" },
+  { char: "被", name: "日本語と発想が違う表現",         url: "https://www.youtube.com/playlist?list=PLRcUqkj2HHqY" },
+  { char: "做", name: "動詞・ことばの使い分け",         url: "https://www.youtube.com/playlist?list=PLakX6mwtPJZ4" },
+  { char: "个", name: "数字・量詞・基礎語彙",           url: "https://www.youtube.com/playlist?list=PLOt9vbskeB2Q" },
+];
 
 /* =================================================================== */
 
@@ -1000,8 +1091,52 @@ function startApp(){
   loadingBox.classList.remove('show');
   requestBanner.style.display = 'block';
   setupRequestLinks();
+  renderPlaylists();
+  document.getElementById('tabSlidesCount').textContent = VIDEO_DATA.length;
   render();
 }
+
+/* ---------- 再生リスト描画 ---------- */
+function renderPlaylists(){
+  const grid = document.getElementById('playlistGrid');
+  grid.innerHTML = PLAYLISTS.map(pl => `
+    <a class="pl-card" href="${escapeHtml(pl.url)}" target="_blank" rel="noopener">
+      <div class="pl-thumb">
+        <span class="cn">${escapeHtml(pl.char)}</span>
+        <span class="play"><svg viewBox="0 0 24 24"><path d="M5 3l14 9-14 9V3z"/></svg></span>
+      </div>
+      <div class="pl-body">
+        <p class="pl-title">${escapeHtml(pl.name)}</p>
+        <p class="pl-meta">再生リスト ▶</p>
+      </div>
+    </a>
+  `).join('');
+}
+
+/* ---------- タブ切り替え ---------- */
+const tabSlides = document.getElementById('tabSlides');
+const tabVideos = document.getElementById('tabVideos');
+const panelSlides = document.getElementById('panelSlides');
+const panelVideos = document.getElementById('panelVideos');
+const searchRow = document.getElementById('searchRow');
+const filterChips = document.getElementById('filterChips');
+const resultCountEl = document.getElementById('resultCount');
+
+function switchTab(which){
+  const slides = which === 'slides';
+  tabSlides.classList.toggle('active', slides);
+  tabVideos.classList.toggle('active', !slides);
+  panelSlides.classList.toggle('show', slides);
+  panelVideos.classList.toggle('show', !slides);
+  // スライドタブのときだけ、検索・ジャンル絞り込み・件数を表示
+  searchRow.style.display = slides ? '' : 'none';
+  filterChips.style.display = slides ? '' : 'none';
+  resultCountEl.style.display = slides ? '' : 'none';
+  // リクエストバナーはスライドタブのときだけ（動画タブでは不要）
+  requestBanner.style.display = slides ? 'block' : 'none';
+}
+tabSlides.addEventListener('click', () => switchTab('slides'));
+tabVideos.addEventListener('click', () => switchTab('videos'));
 
 fetch(CSV_PATH)
   .then(res => {
