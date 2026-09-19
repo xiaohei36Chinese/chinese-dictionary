@@ -495,7 +495,7 @@
       </button>
       <button class="tab" id="tabVideos" type="button">
         <span class="ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 3l14 9-14 9V3z"/></svg></span>
-        動画で学ぶ <span class="count">10</span>
+        動画で学ぶ <span class="count" id="tabVideosCount"></span>
       </button>
     </div>
 
@@ -510,7 +510,7 @@
       <button class="chip" data-genre="使い分け">使い分け</button>
       <button class="chip" data-genre="文法">文法</button>
       <button class="chip" data-genre="語彙">語彙</button>
-      <button class="chip" data-genre="旅行">旅行</button>
+      <button class="chip" data-genre="実践・会話">実践・会話</button>
     </div>
     <p class="result-count" id="resultCount"></p>
   </div>
@@ -647,16 +647,19 @@ const SLIDES_DIR = "slides/";
 //   追加・変更するときは、この配列に1行足す/直すだけ。
 //   char = カードに表示する漢字、name = リスト名、url = 再生リストのURL
 const PLAYLISTS = [
-  { char: "了", name: "「了」と時間・アスペクト",        url: "https://www.youtube.com/playlist?list=PLQTFqOWCvrUY" },
-  { char: "能", name: "助動詞・推測（できる・すべき・たぶん）", url: "https://www.youtube.com/playlist?list=PLWG6yjOVTGWE" },
-  { char: "很", name: "程度・比較の表現",              url: "https://www.youtube.com/playlist?list=PLELLGLfw0QC0" },
-  { char: "这", name: "指示・存在・疑問のことば",        url: "https://www.youtube.com/playlist?list=PLEfoXO9tg5nk" },
-  { char: "如", name: "接続・条件の言い方",            url: "https://www.youtube.com/playlist?list=PLMD6voiZ4QTI" },
-  { char: "就", name: "限定・強調（就・只・而已）",      url: "https://www.youtube.com/playlist?list=PLHRdpMlGtzJY" },
-  { char: "着", name: "多義語をコアイメージで攻略",      url: "https://www.youtube.com/playlist?list=PLJk9qR5hGxKk" },
-  { char: "被", name: "日本語と発想が違う表現",         url: "https://www.youtube.com/playlist?list=PLRcUqkj2HHqY" },
+  { char: "说", name: "中国語でなんて言う？シリーズ",     url: "https://www.youtube.com/playlist?list=PLU3Q4XYXaimvMn_UA8HiLVhZNH17E5LYd" },
   { char: "做", name: "動詞・ことばの使い分け",         url: "https://www.youtube.com/playlist?list=PLakX6mwtPJZ4" },
+  { char: "被", name: "日本語と発想が違う表現",         url: "https://www.youtube.com/playlist?list=PLRcUqkj2HHqY" },
   { char: "个", name: "数字・量詞・基礎語彙",           url: "https://www.youtube.com/playlist?list=PLOt9vbskeB2Q" },
+  { char: "序", name: "動詞のまわり（語順と補語）",      url: "https://www.youtube.com/playlist?list=PLKn2_LoaEnZE" },
+  { char: "了", name: "「了」と時間・アスペクト",        url: "https://www.youtube.com/playlist?list=PLQTFqOWCvrUY" },
+  { char: "这", name: "指示・存在・疑問",              url: "https://www.youtube.com/playlist?list=PLEfoXO9tg5nk" },
+  { char: "报", name: "現場の中国語・書き言葉",         url: "https://www.youtube.com/playlist?list=PLbGnoOXOgC_U" },
+  { char: "能", name: "助動詞・推測（できる・すべき・たぶん）", url: "https://www.youtube.com/playlist?list=PLWG6yjOVTGWE" },
+  { char: "着", name: "多義語をコアイメージで攻略",      url: "https://www.youtube.com/playlist?list=PLJk9qR5hGxKk" },
+  { char: "很", name: "程度・比較",                   url: "https://www.youtube.com/playlist?list=PLELLGLfw0QC0" },
+  { char: "如", name: "接続・条件",                   url: "https://www.youtube.com/playlist?list=PLMD6voiZ4QTI" },
+  { char: "就", name: "限定・強調（就・只・而已）",      url: "https://www.youtube.com/playlist?list=PLHRdpMlGtzJY" },
 ];
 
 /* =================================================================== */
@@ -665,7 +668,7 @@ const GENRE_STYLE = {
   '使い分け': { color: 'var(--seal)', bg: 'var(--seal-soft)' },
   '文法':     { color: 'var(--jade)', bg: 'var(--jade-soft)' },
   '語彙':     { color: 'var(--brass)', bg: 'var(--brass-soft)' },
-  '旅行':     { color: 'var(--sky)',  bg: 'var(--sky-soft)' },
+  '実践・会話': { color: 'var(--sky)',  bg: 'var(--sky-soft)' },
 };
 
 let VIDEO_DATA = [];
@@ -1098,6 +1101,7 @@ function startApp(){
   setupRequestLinks();
   renderPlaylists();
   document.getElementById('tabSlidesCount').textContent = VIDEO_DATA.length;
+  document.getElementById('tabVideosCount').textContent = PLAYLISTS.length;
   render();
 }
 
